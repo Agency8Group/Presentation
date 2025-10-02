@@ -121,12 +121,31 @@
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
         }
+        
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .slide-with-video {
+            position: relative;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
     <div class="presentation-container" id="slides">
         <!-- 슬라이드 1 -->
-        <section class="slide" data-index="0">
+        <section class="slide slide-with-video" data-index="0">
+            <video class="video-background" autoplay muted>
+                <source src="./resorce/전략기획실이란 무엇인가 배경영상.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">전략기획실이란 무엇인가</h1>
             <div class="slogan">"정량적 데이터 기반의 전략적 의사결정을 위한 핵심 부서"</div>
             <div class="ment">"유통 채널 분석, 매출 및 손익 탐색, 전체 운영 상황의 전략적 접근"</div>
@@ -141,7 +160,10 @@
         </section>
 
         <!-- 슬라이드 2 -->
-        <section class="slide hidden" data-index="1">
+        <section class="slide hidden slide-with-video" data-index="1">
+            <video class="video-background" autoplay muted>
+                <source src="./resorce/전략기획실의 핵심역활 배경영상.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">전략기획실의 핵심 역할</h1>
             <div class="slogan">"회사의 방향을 잡고, 구조를 만들고, 흐름을 제시한다"</div>
             <div class="ment">"시스템화, 조직설계, 제품선택, 기업가치 향상을 통한 전략적 성장"</div>
@@ -158,7 +180,10 @@
         </section>
 
         <!-- 슬라이드 3 -->
-        <section class="slide hidden" data-index="2">
+        <section class="slide hidden slide-with-video" data-index="2">
+            <video class="video-background" autoplay muted>
+                <source src="./resorce/전산 시스템 구축 및 물류 일원화 배경영상.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">전산 시스템 구축 및 물류 일원화</h1>
             <div class="slogan">"창고 병합을 통한 물류 일원화 및 ERP 시스템 구축"</div>
             <div class="ment">"하드웨어와 소프트웨어의 통합을 통한 운영 효율성 극대화"</div>
@@ -174,7 +199,10 @@
         </section>
 
         <!-- 슬라이드 4 -->
-        <section class="slide hidden" data-index="3">
+        <section class="slide hidden slide-with-video" data-index="3">
+            <video class="video-background" autoplay muted>
+                <source src="./resorce/복지 및 조직 체계 구축 배경영상.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">복지 및 조직 체계 구축</h1>
             <div class="slogan">"친화기업 인증 준비 및 체계적인 조직 설계"</div>
             <div class="ment">"복지 제도 정비와 명확한 조직 구조를 통한 성장 경로 제시"</div>
@@ -191,7 +219,10 @@
         </section>
 
         <!-- 슬라이드 5 -->
-        <section class="slide hidden" data-index="4">
+        <section class="slide hidden slide-with-video" data-index="4">
+            <video class="video-background" autoplay muted>
+                <source src="./resorce/사업 확장 및 미래 비전.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">사업 확장 및 미래 비전</h1>
             <div class="slogan">"브랜드 포트폴리오 확장과 데이터 기반 전략적 성장"</div>
             <div class="ment">"다각화된 사업 구조와 정량적 분석을 통한 예측 가능한 성장"</div>
@@ -212,7 +243,10 @@
         </section>
 
         <!-- 슬라이드 6 -->
-        <section class="slide hidden" data-index="5">
+        <section class="slide hidden slide-with-video" data-index="5">
+            <video class="video-background" autoplay muted loop>
+                <source src="./resorce/마무리슬라이드배경영상.mp4" type="video/mp4">
+            </video>
             <h1 class="presentation-title">마무리</h1>
             <div class="slogan">"정량적 데이터 기반의 전략적 성장을 위한 시작"</div>
             <div class="ment">"전략기획실은 회사의 정확한 방향을 제시하는 핵심 부서입니다."</div>
@@ -238,8 +272,19 @@
                 slides.forEach((s, i) => {
                     if (i === index) {
                         s.classList.remove('hidden');
+                        // 배경 영상이 있는 슬라이드의 경우 영상 재생
+                        const video = s.querySelector('.video-background');
+                        if (video) {
+                            video.currentTime = 0;
+                            video.play().catch(e => console.log('비디오 재생 실패:', e));
+                        }
                     } else {
                         s.classList.add('hidden');
+                        // 숨겨지는 슬라이드의 배경 영상 일시정지
+                        const video = s.querySelector('.video-background');
+                        if (video) {
+                            video.pause();
+                        }
                     }
                 });
                 // 슬라이드가 바뀔 때마다 카운트 리셋
