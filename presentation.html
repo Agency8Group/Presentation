@@ -20,6 +20,10 @@
             align-items: center;
             justify-content: center;
             color: white;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         
         .presentation-container {
@@ -131,6 +135,8 @@
             object-fit: cover;
             z-index: -1;
             opacity: 0.3;
+            min-width: 100%;
+            min-height: 100%;
         }
         
         .slide-with-video {
@@ -261,12 +267,26 @@
         </section>
     </div>
 
+    <!-- 배경음악 (index.html에서 이어서 재생) -->
+    <audio id="background-music" preload="auto" loop autoplay>
+        <source src="./resorce/인트로자동슬라이드때음악켰다가 전략기획실 다가올때 줄어들어야함.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         (function () {
             const slides = Array.from(document.querySelectorAll('.slide'));
             let current = 0;
             let enterCount = 0; // 엔터 키 누른 횟수 추적
             let backspaceCount = 0; // 백스페이스 키 누른 횟수 추적
+            
+            // 배경음악 초기화
+            const backgroundMusic = document.getElementById('background-music');
+            if (backgroundMusic) {
+                backgroundMusic.volume = 0.1; // 낮은 볼륨으로 시작
+                backgroundMusic.play().catch(e => {
+                    console.log('배경음악 재생 실패:', e);
+                });
+            }
 
             function showSlide(index) {
                 slides.forEach((s, i) => {
