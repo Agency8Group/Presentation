@@ -87,42 +87,119 @@
         }
         
         .slide-title {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             line-height: 1.1;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
             padding: 0.5rem 1rem;
             border-radius: 8px;
             backdrop-filter: blur(2px);
+            position: relative;
+            overflow: hidden;
         }
         
-        .slide-title.show {
+        .slide-title .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .slide-title .char.show {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        /* 타이핑 시작 전에는 모든 텍스트 숨기기 */
+        .slide-title:not(.typing-started) .char {
+            opacity: 0 !important;
+            transform: translateY(20px) !important;
+        }
+        
+        /* 타이핑 시작 전에는 제목과 부제목 자체도 숨기기 */
+        .slide-title:not(.typing-started),
+        .slide-subtitle:not(.typing-started) {
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        
+        /* 타이핑 시작되면 부드럽게 나타나기 */
+        .slide-title.typing-started,
+        .slide-subtitle.typing-started {
+            opacity: 1;
+            transition: opacity 0.8s ease-in-out;
+        }
+        
+        
+        /* 우리회사 슬라이드 배경 이미지 크기 조정 */
+        .slide[data-slide="3"] .slide-image {
+            transform: scale(0.6);
+            transform-origin: center center;
+        }
+        
+        .slide-title .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background: rgba(255, 255, 255, 0.8);
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+        }
+        
+        .slide-title .cursor.hidden {
+            display: none;
         }
         
         .slide-subtitle {
             font-size: 1.5rem;
             font-weight: 300;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            transition-delay: 0.3s;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
             background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
             padding: 0.3rem 0.8rem;
             border-radius: 6px;
             backdrop-filter: blur(1px);
+            position: relative;
+            overflow: hidden;
         }
         
-        .slide-subtitle.show {
+        .slide-subtitle .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .slide-subtitle .char.show {
             opacity: 0.9;
             transform: translateY(0);
+        }
+        
+        /* 타이핑 시작 전에는 모든 텍스트 숨기기 */
+        .slide-subtitle:not(.typing-started) .char {
+            opacity: 0 !important;
+            transform: translateY(15px) !important;
+        }
+        
+        .slide-subtitle .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: rgba(255, 255, 255, 0.6);
+            margin-left: 1px;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+        }
+        
+        .slide-subtitle .cursor.hidden {
+            display: none;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
         
         .final-screen {
@@ -326,8 +403,8 @@
             <img src="./resorce/1..뉴트리시아배경.png" alt="뉴트리시아" class="slide-image">
             <div class="slide-overlay"></div>
             <div class="slide-content">
-                <h1 class="slide-title">뉴트리시아</h1>
-                <p class="slide-subtitle">프리미엄 육아 솔루션, 압타밀</p>
+                <h1 class="slide-title">아기 울음과 함께 시작되는 하루</h1>
+                <p class="slide-subtitle">뉴트리시아팀은 오늘도 육아라는 세상과 가장 가까운 곳에 있습니다</p>
             </div>
         </div>
 
@@ -336,8 +413,8 @@
             <img src="./resorce/2.드리미배경.webp" alt="드리미" class="slide-image">
             <div class="slide-overlay"></div>
             <div class="slide-content">
-                <h1 class="slide-title">드리미</h1>
-                <p class="slide-subtitle">혁신적인 청소 솔루션</p>
+                <h1 class="slide-title">부스럭 소리를 줄이는 기술</h1>
+                <p class="slide-subtitle">드리미팀은 내일의 청소가 오늘보다 조금 더 편하길 바라며 움직입니다</p>
             </div>
         </div>
 
@@ -346,8 +423,8 @@
             <img src="./resorce/3.브라이튼배경.jpg" alt="브라이튼" class="slide-image">
             <div class="slide-overlay"></div>
             <div class="slide-content">
-                <h1 class="slide-title">브라이튼</h1>
-                <p class="slide-subtitle">밝은 미래를 위한 여행</p>
+                <h1 class="slide-title">더 멀리, 더 밝게</h1>
+                <p class="slide-subtitle">브라이튼팀은 여행이라는 이름으로 사람들의 미래를 준비합니다</p>
             </div>
         </div>
 
@@ -356,8 +433,8 @@
             <img src="./resorce/4.우리회사배경.png" alt="우리회사" class="slide-image">
             <div class="slide-overlay"></div>
             <div class="slide-content">
-                <h1 class="slide-title">기준을깨고 나아가.<h1
-                <p class="slide-subtitle">혁신과 성장의 파트너</p>
+                <h1 class="slide-title">이 모든 팀들이 모이는 곳</h1>
+                <p class="slide-subtitle">다른 모습, 다른 생각, 다른 기대. 그래서 우리는 기준을 다시 생각했습니다</p>
             </div>
         </div>
 
@@ -370,6 +447,15 @@
             </div>
         </div>
     </div>
+
+    <!-- 오디오 요소들 -->
+    <audio id="background-music" preload="auto" loop>
+        <source src="./resorce/인트로자동슬라이드때음악켰다가 전략기획실 다가올때 줄어들어야함.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="final-sound" preload="auto">
+        <source src="./resorce/전략기확실페이지에서 1회만 틀으면됨 .mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         // 파티클 효과 클래스
@@ -578,6 +664,11 @@
                 this.requiredClicks = 2;
                 this.particleSystem = null;
                 
+                // 오디오 요소들
+                this.backgroundMusic = document.getElementById('background-music');
+                this.finalSound = document.getElementById('final-sound');
+                this.isFinalSoundPlayed = false;
+                
                 this.init();
             }
             
@@ -606,6 +697,9 @@
                 // 인트로 화면 숨기기
                 this.introScreen.classList.add('hidden');
                 
+                // 배경음악 시작
+                this.startBackgroundMusic();
+                
                 // 슬라이드쇼 시작
                 setTimeout(() => {
                     this.beginSlideshow();
@@ -614,6 +708,31 @@
             
             beginSlideshow() {
                 this.startSlideshowAnimation();
+            }
+            
+            // 배경음악 시작
+            startBackgroundMusic() {
+                if (this.backgroundMusic) {
+                    this.backgroundMusic.volume = 0.7; // 초기 볼륨 설정
+                    this.backgroundMusic.play().catch(e => {
+                        console.log('배경음악 재생 실패:', e);
+                    });
+                }
+            }
+            
+            // 배경음악 볼륨 감소 (전략기획실 다가올 때)
+            fadeOutBackgroundMusic() {
+                if (this.backgroundMusic) {
+                    const fadeOut = () => {
+                        if (this.backgroundMusic.volume > 0.1) {
+                            this.backgroundMusic.volume -= 0.05;
+                            setTimeout(fadeOut, 100);
+                        } else {
+                            this.backgroundMusic.volume = 0;
+                        }
+                    };
+                    fadeOut();
+                }
             }
             
             async showSlide(index) {
@@ -634,8 +753,8 @@
                 const subtitle = currentSlide.querySelector('.slide-subtitle');
                 
                 // 텍스트 애니메이션 리셋
-                title.classList.remove('show');
-                subtitle.classList.remove('show');
+                title.classList.remove('show', 'typing-started');
+                subtitle.classList.remove('show', 'typing-started');
                 
                 // 텍스트 애니메이션 시작
                 await this.animateText(title, subtitle);
@@ -644,21 +763,62 @@
             }
             
             async animateText(title, subtitle) {
-                // 제목 애니메이션
-                await new Promise(resolve => {
-                    setTimeout(() => {
-                        title.classList.add('show');
-                        resolve();
-                    }, 500);
-                });
+                // 텍스트를 문자별로 분리하여 HTML 구조 생성
+                this.prepareTextForTyping(title, subtitle);
                 
-                // 부제목 애니메이션
-                await new Promise(resolve => {
+                // 제목 타이핑 애니메이션
+                await this.typeText(title, 80); // 80ms 간격
+                
+                // 잠시 대기
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 부제목 타이핑 애니메이션
+                await this.typeText(subtitle, 50); // 50ms 간격
+            }
+            
+            prepareTextForTyping(title, subtitle) {
+                // 제목을 문자별로 분리
+                const titleText = title.textContent;
+                title.innerHTML = titleText.split('').map(char => 
+                    `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`
+                ).join('') + '<span class="cursor"></span>';
+                
+                // 부제목을 문자별로 분리
+                const subtitleText = subtitle.textContent;
+                subtitle.innerHTML = subtitleText.split('').map(char => 
+                    `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`
+                ).join('') + '<span class="cursor"></span>';
+                
+                // 타이핑 시작 클래스 추가 (부드러운 페이드인 효과)
+                title.classList.add('typing-started');
+                subtitle.classList.add('typing-started');
+            }
+            
+            async typeText(element, speed) {
+                const chars = element.querySelectorAll('.char');
+                const cursor = element.querySelector('.cursor');
+                
+                // 커서 숨기기
+                if (cursor) {
+                    cursor.classList.add('hidden');
+                }
+                
+                // 각 문자를 순차적으로 표시
+                for (let i = 0; i < chars.length; i++) {
+                    await new Promise(resolve => {
+                        setTimeout(() => {
+                            chars[i].classList.add('show');
+                            resolve();
+                        }, speed);
+                    });
+                }
+                
+                // 타이핑 완료 후 커서 숨기기
+                if (cursor) {
                     setTimeout(() => {
-                        subtitle.classList.add('show');
-                        resolve();
-                    }, 300);
-                });
+                        cursor.classList.add('hidden');
+                    }, 1000);
+                }
             }
             
             async nextSlide() {
@@ -676,6 +836,10 @@
                 } else {
                     // 마지막 슬라이드 후 최종 화면 표시
                     console.log('마지막 슬라이드 완료, 최종 화면 표시 시작');
+                    
+                    // 배경음악 페이드아웃 시작
+                    this.fadeOutBackgroundMusic();
+                    
                     await new Promise(resolve => {
                         setTimeout(resolve, this.slideDuration);
                     });
@@ -692,6 +856,9 @@
                 
                 // 파티클 시스템 초기화 및 시작
                 this.initParticleSystem();
+                
+                // 효과음 재생 (1회만)
+                this.playFinalSound();
                 
                 // 제목 애니메이션
                 await new Promise(resolve => {
@@ -718,6 +885,17 @@
                 
                 // 엔터 키 대기
                 this.setupFinalControl();
+            }
+            
+            // 최종 효과음 재생 (1회만)
+            playFinalSound() {
+                if (this.finalSound && !this.isFinalSoundPlayed) {
+                    this.finalSound.volume = 0.8;
+                    this.finalSound.play().catch(e => {
+                        console.log('효과음 재생 실패:', e);
+                    });
+                    this.isFinalSoundPlayed = true;
+                }
             }
             
             initParticleSystem() {
