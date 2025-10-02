@@ -9,6 +9,7 @@
         src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js"
         type="module"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -137,6 +138,17 @@
             opacity: 0;
             transform: translateY(50px) scale(0.95);
             transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* 파티클 컨테이너 */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
         
         .final-screen.show {
@@ -351,6 +363,7 @@
 
         <!-- 최종 화면 -->
         <div class="final-screen" id="final-screen">
+            <div class="particles-container" id="particles-container"></div>
             <div class="final-content">
                 <h1 class="final-title">전략기획실</h1>
                 <div class="final-line" id="final-line"></div>
@@ -359,6 +372,137 @@
     </div>
 
     <script>
+        // 파티클 효과 클래스
+        class ParticleSystem {
+            constructor(container) {
+                this.container = container;
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.particles = null;
+                this.animationId = null;
+                this.isActive = false;
+            }
+            
+            init() {
+                // Three.js 씬 생성
+                this.scene = new THREE.Scene();
+                
+                // 카메라 설정
+                this.camera = new THREE.PerspectiveCamera(
+                    75, 
+                    window.innerWidth / window.innerHeight, 
+                    0.1, 
+                    1000
+                );
+                this.camera.position.z = 5;
+                
+                // 렌더러 설정
+                this.renderer = new THREE.WebGLRenderer({ 
+                    alpha: true, 
+                    antialias: true 
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x000000, 0);
+                this.container.appendChild(this.renderer.domElement);
+                
+                // 파티클 생성
+                this.createParticles();
+                
+                // 윈도우 리사이즈 이벤트
+                window.addEventListener('resize', () => this.onWindowResize());
+            }
+            
+            createParticles() {
+                const particleCount = 200;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // 위치 설정 (랜덤하게 분산)
+                    positions[i3] = (Math.random() - 0.5) * 20;
+                    positions[i3 + 1] = (Math.random() - 0.5) * 20;
+                    positions[i3 + 2] = (Math.random() - 0.5) * 20;
+                    
+                    // 색상 설정 (흰색 계열)
+                    const color = new THREE.Color();
+                    color.setHSL(0, 0, Math.random() * 0.5 + 0.5);
+                    colors[i3] = color.r;
+                    colors[i3 + 1] = color.g;
+                    colors[i3 + 2] = color.b;
+                }
+                
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.1,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.particles = new THREE.Points(geometry, material);
+                this.scene.add(this.particles);
+            }
+            
+            animate() {
+                if (!this.isActive) return;
+                
+                this.animationId = requestAnimationFrame(() => this.animate());
+                
+                // 파티클 회전
+                if (this.particles) {
+                    this.particles.rotation.x += 0.001;
+                    this.particles.rotation.y += 0.002;
+                    
+                    // 파티클 위치 업데이트
+                    const positions = this.particles.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i + 1] += Math.sin(Date.now() * 0.001 + i) * 0.01;
+                    }
+                    this.particles.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            start() {
+                if (!this.isActive) {
+                    this.isActive = true;
+                    this.animate();
+                }
+            }
+            
+            stop() {
+                this.isActive = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+            }
+            
+            onWindowResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            
+            destroy() {
+                this.stop();
+                if (this.renderer && this.renderer.domElement) {
+                    this.container.removeChild(this.renderer.domElement);
+                }
+                if (this.renderer) {
+                    this.renderer.dispose();
+                }
+            }
+        }
+
         class Slideshow {
             constructor() {
                 this.currentSlide = 0;
@@ -370,6 +514,7 @@
                 this.slideDuration = 4000; // 4초
                 this.clickCount = 0;
                 this.requiredClicks = 2;
+                this.particleSystem = null;
                 
                 this.init();
             }
@@ -483,6 +628,9 @@
                 // 최종 화면 표시
                 this.finalScreen.classList.add('show');
                 
+                // 파티클 시스템 초기화 및 시작
+                this.initParticleSystem();
+                
                 // 제목 애니메이션
                 await new Promise(resolve => {
                     setTimeout(() => {
@@ -510,10 +658,26 @@
                 this.setupFinalControl();
             }
             
+            initParticleSystem() {
+                const particlesContainer = document.getElementById('particles-container');
+                if (particlesContainer && typeof THREE !== 'undefined') {
+                    this.particleSystem = new ParticleSystem(particlesContainer);
+                    this.particleSystem.init();
+                    this.particleSystem.start();
+                    console.log('파티클 시스템 시작됨');
+                } else {
+                    console.warn('Three.js가 로드되지 않았거나 파티클 컨테이너를 찾을 수 없습니다.');
+                }
+            }
+            
             setupFinalControl() {
                 // 엔터 키 이벤트 리스너 추가
                 const handleKeyPress = (e) => {
                     if (e.key === 'Enter') {
+                        // 파티클 시스템 정리
+                        if (this.particleSystem) {
+                            this.particleSystem.destroy();
+                        }
                         document.removeEventListener('keydown', handleKeyPress);
                         // presentation.html로 이동
                         window.location.href = 'presentation.html';
