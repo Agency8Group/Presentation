@@ -137,6 +137,11 @@
             opacity: 0.3;
             min-width: 100%;
             min-height: 100%;
+            /* GPU 가속 및 성능 최적화 */
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         
         .slide-with-video {
@@ -149,7 +154,7 @@
     <div class="presentation-container" id="slides">
         <!-- 슬라이드 1 -->
         <section class="slide slide-with-video" data-index="0">
-            <video class="video-background" autoplay muted>
+            <video class="video-background" autoplay muted preload="auto" playsinline>
                 <source src="./resorce/전략기획실이란 무엇인가 배경영상.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">전략기획실이란 무엇인가</h1>
@@ -167,7 +172,7 @@
 
         <!-- 슬라이드 2 -->
         <section class="slide hidden slide-with-video" data-index="1">
-            <video class="video-background" autoplay muted>
+            <video class="video-background" autoplay muted preload="none" playsinline>
                 <source src="./resorce/전략기획실의 핵심역활 배경영상.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">전략기획실의 핵심 역할</h1>
@@ -187,7 +192,7 @@
 
         <!-- 슬라이드 3 -->
         <section class="slide hidden slide-with-video" data-index="2">
-            <video class="video-background" autoplay muted>
+            <video class="video-background" autoplay muted preload="none" playsinline>
                 <source src="./resorce/전산 시스템 구축 및 물류 일원화 배경영상.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">첫째. 전산 시스템 구축 및 물류 일원화</h1>
@@ -206,7 +211,7 @@
 
         <!-- 슬라이드 4 -->
         <section class="slide hidden slide-with-video" data-index="3">
-            <video class="video-background" autoplay muted>
+            <video class="video-background" autoplay muted preload="none" playsinline>
                 <source src="./resorce/복지 및 조직 체계 구축 배경영상.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">둘째. 복지 및 조직 체계 구축</h1>
@@ -226,7 +231,7 @@
 
         <!-- 슬라이드 5 -->
         <section class="slide hidden slide-with-video" data-index="4">
-            <video class="video-background" autoplay muted>
+            <video class="video-background" autoplay muted preload="none" playsinline>
                 <source src="./resorce/사업 확장 및 미래 비전.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">셋째. 사업 확장 및 미래 비전</h1>
@@ -250,7 +255,7 @@
 
         <!-- 슬라이드 6 -->
         <section class="slide hidden slide-with-video" data-index="5">
-            <video class="video-background" autoplay muted loop>
+            <video class="video-background" autoplay muted loop preload="none" playsinline>
                 <source src="./resorce/마무리슬라이드배경영상.mp4" type="video/mp4">
             </video>
             <h1 class="presentation-title">마무리</h1>
@@ -288,13 +293,19 @@
                 });
             }
 
+
             function showSlide(index) {
                 slides.forEach((s, i) => {
                     if (i === index) {
                         s.classList.remove('hidden');
-                        // 배경 영상이 있는 슬라이드의 경우 영상 재생
+                        // 배경 영상이 있는 슬라이드의 경우 영상 로드 및 재생
                         const video = s.querySelector('.video-background');
                         if (video) {
+                            // preload="none"인 경우에만 로드
+                            if (video.preload === 'none') {
+                                video.preload = 'auto';
+                                video.load();
+                            }
                             video.currentTime = 0;
                             video.play().catch(e => console.log('비디오 재생 실패:', e));
                         }
@@ -304,6 +315,10 @@
                         const video = s.querySelector('.video-background');
                         if (video) {
                             video.pause();
+                            // 메모리 절약을 위해 preload만 none으로 변경 (src는 유지)
+                            if (i > index + 1 || i < index - 1) {
+                                video.preload = 'none';
+                            }
                         }
                     }
                 });
