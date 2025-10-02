@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프레젠테이션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .presentation-container {
+            text-align: center;
+            max-width: 1000px;
+            padding: 2rem;
+        }
+        
+        .slide {
+            display: none;
+            min-height: 80vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slide:not(.hidden) {
+            display: flex;
+        }
+        
+        .slide.hidden {
+            display: none;
+        }
+        
+        .slogan {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.3s forwards;
+        }
+        
+        .ment {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #e5e7eb;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.6s forwards;
+        }
+        
+        .speech {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #d1d5db;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.9s forwards;
+        }
+        
+        .content {
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 1.2s forwards;
+        }
+        
+        .presentation-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 1s ease-out 0.5s forwards;
+        }
+        
+        .presentation-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 1s forwards;
+        }
+        
+        .enter-hint {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: slideIn 1s ease-out 1.5s forwards;
+            animation: pulse 2s infinite 2s;
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="slides">
+        <!-- 슬라이드 1 -->
+        <section class="slide" data-index="0">
+            <h1 class="presentation-title">알고 보니, 이유는 따로 있었다</h1>
+            <div class="slogan">"알고 보니, 우리가 불편했던 이유는 단순한 시스템 문제가 아니었습니다."</div>
+            <div class="ment">"불편했던 건 시스템보다도 '불확실한 기준'이었습니다."</div>
+            <div class="speech">
+                "복지, 전산, 직급... 다 불편했죠. 근데 진짜 문제는 하나였던 것 같아요.<br>
+                그 모든 걸 관통하는 건 '기준이 없었다'는 거예요.<br>
+                뭐 제 사원 시절만 해도, '이런 건 좀 명확했으면 좋겠다' 싶었거든요.<br>
+                그게 안 되니까 불안했고, 그래서 계속 '나는 어디쯤인가?'를 고민하게 되는 거예요."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 2 -->
+        <section class="slide hidden" data-index="1">
+            <h1 class="presentation-title">전략기획실이 생긴 이유</h1>
+            <div class="slogan">"조직의 빈틈에 전략을 심다."</div>
+            <div class="ment">"운영과 정책 사이, 시스템과 사용자 사이. 우리는 그 경계에 있습니다."</div>
+            <div class="speech">
+                "전략기획실은 원래 존재하지 않던 부서입니다.<br>
+                그런데 회사 곳곳을 보면서, 한 가지 깨달음이 있었어요.<br>
+                이곳은 누구도 고의로 불편하게 만들지 않지만,<br>
+                누군가는 그 틈을 메워야 한다는 거죠.<br>
+                운영과 정책 사이, 시스템과 사용자 사이.<br>
+                우리는 그 사이에 서기 위해 만들어졌습니다.<br>
+                가족회사라는 이중적 구조 속에서, 일만 잘하면 되는 회사를 만들기 위한 시작이기도 합니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 3 -->
+        <section class="slide hidden" data-index="2">
+            <h1 class="presentation-title">우리가 가는 방향</h1>
+            <div class="slogan">"기준 있는 조직, 예측 가능한 복지, 진화하는 시스템"</div>
+            <div class="ment">"비전은 말이 아니라 구조입니다. 이제, 실행의 시간입니다."</div>
+            <div class="speech">
+                "우리가 꿈꾸는 조직은 복지 좋은 회사가 아니라,<br>
+                예측 가능한 기준과 함께 성장할 수 있는 구조입니다.<br>
+                다음 1년 간, 우리가 추진할 실질적 방향을 소개하겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 4 -->
+        <section class="slide hidden" data-index="3">
+            <h1 class="presentation-title">① 외부 복지 / 제도 정비</h1>
+            <div class="slogan">"일 잘할 수 있는 환경은, 일 밖에서 시작된다."</div>
+            <div class="ment">"정부 복지제도를 우리 조직 안으로 끌어옵니다."</div>
+            <div class="speech">
+                "중소기업 복지 플랫폼 도입, 육아휴직 제도 재정비 등<br>
+                국가가 만든 제도를 우리가 빠짐없이 누릴 수 있도록 정비하겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 5 -->
+        <section class="slide hidden" data-index="4">
+            <h1 class="presentation-title">② 전산 시스템 구축</h1>
+            <div class="slogan">"자동화는 여유를, 실시간은 명확함을 줍니다."</div>
+            <div class="ment">"수기로 관리하는 재고, 엑셀로 보는 손익. 이젠 끝냅시다."</div>
+            <div class="speech">
+                "이커머스 대응형 ERP/WMS를 구축해<br>
+                자동화, 실시간 재고관리, 수익 분석이 가능하게 하겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 6 -->
+        <section class="slide hidden" data-index="5">
+            <h1 class="presentation-title">③ 직급/직책/조직 개편</h1>
+            <div class="slogan">"명확한 기준이 곧 방향이다."</div>
+            <div class="ment">"수평조직이 아니라, 성장조직을 설계합니다."</div>
+            <div class="speech">
+                "신입 → 중간관리 → 책임자로 이어지는 성장 경로를<br>
+                수직적으로 설계해, '내가 다음엔 어디로 가는지'가 보이는 구조로 만들겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 7 -->
+        <section class="slide hidden" data-index="6">
+            <h1 class="presentation-title">왜 지금, 왜 우리인가</h1>
+            <div class="slogan">"기회에서 구조로, 이제는 전환의 시간"</div>
+            <div class="ment">"이제는 회사도 개인도 '기준 있는 성장'을 해야 할 때입니다."</div>
+            <div class="speech">
+                "지금까지는 기회와 역량으로 성장해왔다면,<br>
+                이제는 체계와 기준을 통해 성장해야 할 시기입니다.<br>
+                전략기획실은 그 전환의 중심입니다.<br>
+                저 역시 가족, 친구들과 다양한 일을 해보면서<br>
+                '내가 회사를 진짜 책임져야 할 때는 어떻게 해야 하나?' 고민해왔습니다.<br>
+                전략기획실은 그 질문에 대한 저 나름의 답입니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 계속</p>
+        </section>
+
+        <!-- 슬라이드 8 -->
+        <section class="slide hidden" data-index="7">
+            <h1 class="presentation-title">마무리</h1>
+            <div class="slogan">"우리는 더 나은 회사를 만드는 일에, 함께하고 있습니다."</div>
+            <div class="ment">"이건 누구를 위한 변화가 아닙니다. 결국, 우리 모두를 위한 겁니다."</div>
+            <div class="speech">
+                "지금 우리가 만드는 기준,<br>
+                지금 우리가 만드는 시스템,<br>
+                결국 그것은 동료를 위한 것이고,<br>
+                미래의 나를 위한 일이기도 합니다."
+            </div>
+            <p class="enter-hint">엔터 키를 눌러 종료</p>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            let current = 0;
+
+            function showSlide(index) {
+                slides.forEach((s, i) => {
+                    if (i === index) {
+                        s.classList.remove('hidden');
+                    } else {
+                        s.classList.add('hidden');
+                    }
+                });
+            }
+
+            function onEnter(e) {
+                if (e.key !== 'Enter') return;
+                if (current < slides.length - 1) {
+                    current += 1;
+                    showSlide(current);
+                } else {
+                    // 마지막 슬라이드에서 엔터 → 종료 혹은 이후 액션 (지금은 초기화)
+                    console.log('프레젠테이션 종료');
+                }
+            }
+
+            // 초기 표시
+            showSlide(current);
+
+            // 엔터로만 진행
+            document.addEventListener('keydown', onEnter);
+        })();
+    </script>
+</body>
+</html>

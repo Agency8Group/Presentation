@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>브랜드 슬라이드쇼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+        src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js"
+        type="module"
+    ></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.4) 0%,
+                rgba(0, 0, 0, 0.2) 30%,
+                rgba(0, 0, 0, 0.1) 50%,
+                rgba(0, 0, 0, 0.3) 70%,
+                rgba(0, 0, 0, 0.6) 100%
+            );
+        }
+        
+        .slide-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 10;
+            width: 90%;
+            max-width: 800px;
+        }
+        
+        .slide-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(2px);
+        }
+        
+        .slide-title.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .slide-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.3s;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            backdrop-filter: blur(1px);
+        }
+        
+        .slide-subtitle.show {
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+        
+        .final-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .final-screen.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        .final-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .final-title {
+            font-size: 6rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(3px);
+        }
+        
+        .final-title.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .final-line {
+            width: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            margin: 0 auto;
+            transition: width 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .final-line.show {
+            width: 300px;
+        }
+        
+        /* 인트로 화면 */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #000428 0%, #000000 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 2s ease-out;
+        }
+        
+        .intro-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .intro-content {
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 50px 0;
+        }
+        
+        dotlottie-wc {
+            display: block;
+            border: none !important;
+            outline: none;
+            background: transparent;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            width: 500px;
+            height: 500px;
+            border-radius: 0;
+        }
+        
+        dotlottie-wc *,
+        dotlottie-wc *::before,
+        dotlottie-wc *::after {
+            border: none !important;
+            outline: none;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        dotlottie-wc canvas,
+        dotlottie-wc svg,
+        dotlottie-wc iframe {
+            border: none !important;
+            outline: none;
+            box-shadow: none;
+            display: block;
+            border-radius: 50%;
+        }
+        
+        .intro-title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .intro-title.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .intro-subtitle {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: 200;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.5s;
+        }
+        
+        .intro-subtitle.show {
+            opacity: 0.7;
+            transform: translateY(0);
+        }
+        
+        
+        .click-hint {
+            font-size: 0.9rem;
+            opacity: 0.5;
+            margin-top: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 인트로 화면 -->
+    <div class="intro-screen" id="intro-screen">
+        <div class="intro-content">
+            <dotlottie-wc
+                src="./resorce/Background looping animation.lottie"
+                style="width: 500px;height: 500px"
+                autoplay
+                loop
+            ></dotlottie-wc>
+        </div>
+    </div>
+
+    <div class="slideshow-container">
+        <!-- 슬라이드 1: 뉴트리시아 -->
+        <div class="slide active" data-slide="0">
+            <img src="./resorce/1..뉴트리시아배경.png" alt="뉴트리시아" class="slide-image">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">뉴트리시아</h1>
+                <p class="slide-subtitle">프리미엄 육아 솔루션, 압타밀</p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 2: 드리미 -->
+        <div class="slide" data-slide="1">
+            <img src="./resorce/2.드리미배경.webp" alt="드리미" class="slide-image">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">드리미</h1>
+                <p class="slide-subtitle">혁신적인 청소 솔루션</p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 3: 브라이튼 -->
+        <div class="slide" data-slide="2">
+            <img src="./resorce/3.브라이튼배경.jpg" alt="브라이튼" class="slide-image">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">브라이튼</h1>
+                <p class="slide-subtitle">밝은 미래를 위한 여행</p>
+            </div>
+        </div>
+
+        <!-- 슬라이드 4: 우리회사 -->
+        <div class="slide" data-slide="3">
+            <img src="./resorce/4.우리회사배경.png" alt="우리회사" class="slide-image">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h1 class="slide-title">기준을깨고 나아가.<h1
+                <p class="slide-subtitle">혁신과 성장의 파트너</p>
+            </div>
+        </div>
+
+        <!-- 최종 화면 -->
+        <div class="final-screen" id="final-screen">
+            <div class="final-content">
+                <h1 class="final-title">전략기획실</h1>
+                <div class="final-line" id="final-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class Slideshow {
+            constructor() {
+                this.currentSlide = 0;
+                this.isTransitioning = false;
+                this.slides = document.querySelectorAll('.slide');
+                this.finalScreen = document.getElementById('final-screen');
+                this.finalLine = document.getElementById('final-line');
+                this.introScreen = document.getElementById('intro-screen');
+                this.slideDuration = 4000; // 4초
+                this.clickCount = 0;
+                this.requiredClicks = 2;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupIntro();
+            }
+            
+            setupIntro() {
+                // 엔터 키 이벤트 리스너
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleIntroClick();
+                    }
+                });
+            }
+            
+            handleIntroClick() {
+                this.clickCount++;
+                
+                if (this.clickCount >= this.requiredClicks) {
+                    this.startSlideshow();
+                }
+            }
+            
+            startSlideshow() {
+                // 인트로 화면 숨기기
+                this.introScreen.classList.add('hidden');
+                
+                // 슬라이드쇼 시작
+                setTimeout(() => {
+                    this.beginSlideshow();
+                }, 2000);
+            }
+            
+            beginSlideshow() {
+                this.startSlideshowAnimation();
+            }
+            
+            async showSlide(index) {
+                if (this.isTransitioning) return;
+                this.isTransitioning = true;
+                
+                // 모든 슬라이드 숨기기
+                this.slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                    }
+                });
+                
+                // 현재 슬라이드의 텍스트 애니메이션
+                const currentSlide = this.slides[index];
+                const title = currentSlide.querySelector('.slide-title');
+                const subtitle = currentSlide.querySelector('.slide-subtitle');
+                
+                // 텍스트 애니메이션 리셋
+                title.classList.remove('show');
+                subtitle.classList.remove('show');
+                
+                // 텍스트 애니메이션 시작
+                await this.animateText(title, subtitle);
+                
+                this.isTransitioning = false;
+            }
+            
+            async animateText(title, subtitle) {
+                // 제목 애니메이션
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        title.classList.add('show');
+                        resolve();
+                    }, 500);
+                });
+                
+                // 부제목 애니메이션
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        subtitle.classList.add('show');
+                        resolve();
+                    }, 300);
+                });
+            }
+            
+            async nextSlide() {
+                if (this.currentSlide < this.slides.length - 1) {
+                    this.currentSlide++;
+                    await this.showSlide(this.currentSlide);
+                    
+                    // 슬라이드 지속 시간 대기
+                    await new Promise(resolve => {
+                        setTimeout(resolve, this.slideDuration);
+                    });
+                    
+                    // 다음 슬라이드로
+                    this.nextSlide();
+                } else {
+                    // 마지막 슬라이드 후 최종 화면 표시
+                    console.log('마지막 슬라이드 완료, 최종 화면 표시 시작');
+                    await new Promise(resolve => {
+                        setTimeout(resolve, this.slideDuration);
+                    });
+                    
+                    await this.showFinalScreen();
+                }
+            }
+            
+            async showFinalScreen() {
+                console.log('최종 화면 표시 시작');
+                
+                // 최종 화면 표시
+                this.finalScreen.classList.add('show');
+                
+                // 제목 애니메이션
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const finalTitle = this.finalScreen.querySelector('.final-title');
+                        if (finalTitle) {
+                            finalTitle.classList.add('show');
+                            console.log('최종 제목 애니메이션 시작');
+                        }
+                        resolve();
+                    }, 1000);
+                });
+                
+                // 라인 애니메이션
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        if (this.finalLine) {
+                            this.finalLine.classList.add('show');
+                            console.log('라인 애니메이션 시작');
+                        }
+                        resolve();
+                    }, 2000);
+                });
+                
+                // 엔터 키 대기
+                this.setupFinalControl();
+            }
+            
+            setupFinalControl() {
+                // 엔터 키 이벤트 리스너 추가
+                const handleKeyPress = (e) => {
+                    if (e.key === 'Enter') {
+                        document.removeEventListener('keydown', handleKeyPress);
+                        // presentation.html로 이동
+                        window.location.href = 'presentation.html';
+                    }
+                };
+                document.addEventListener('keydown', handleKeyPress);
+            }
+            
+            async startSlideshowAnimation() {
+                // 첫 번째 슬라이드 텍스트 애니메이션
+                const firstSlide = this.slides[0];
+                const title = firstSlide.querySelector('.slide-title');
+                const subtitle = firstSlide.querySelector('.slide-subtitle');
+                
+                await this.animateText(title, subtitle);
+                
+                // 첫 번째 슬라이드 지속 시간 대기
+                await new Promise(resolve => {
+                    setTimeout(resolve, this.slideDuration);
+                });
+                
+                // 슬라이드쇼 시작
+                this.nextSlide();
+            }
+        }
+        
+        // 슬라이드쇼 시작
+        new Slideshow();
+    </script>
+</body>
+</html>
