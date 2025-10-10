@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프레젠테이션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .presentation-container {
+            text-align: center;
+            max-width: 1000px;
+            padding: 2rem;
+        }
+        
+        .slide {
+            display: none;
+            min-height: 80vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slide:not(.hidden) {
+            display: flex;
+        }
+        
+        .slide.hidden {
+            display: none;
+        }
+        
+        .slogan {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.3s forwards;
+        }
+        
+        .ment {
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #e5e7eb;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.6s forwards;
+        }
+        
+        .speech {
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #d1d5db;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 0.9s forwards;
+        }
+        
+        .content {
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 1.2s forwards;
+        }
+        
+        .presentation-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 1s ease-out 0.5s forwards;
+        }
+        
+        .presentation-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 1s ease-out 1s forwards;
+        }
+        
+        .enter-hint {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: slideIn 1s ease-out 1.5s forwards;
+            animation: pulse 2s infinite 2s;
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+            min-width: 100%;
+            min-height: 100%;
+            /* GPU 가속 및 성능 최적화 */
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        
+        .slide-with-video {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="slides">
+        <!-- 슬라이드 1 -->
+        <section class="slide slide-with-video" data-index="0">
+            <video class="video-background" autoplay muted preload="auto" playsinline>
+                <source src="./resorce/전략기획실이란 무엇인가 배경영상.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">전략기획실이란 무엇인가</h1>
+            <div class="slogan">"정량적 데이터 기반의 전략적 의사결정을 위한 핵심 부서"</div>
+            <div class="ment">"유통 채널 분석, 매출 및 손익 탐색, 전체 운영 상황의 전략적 접근"</div>
+            <div class="speech">
+                "전략기획실은 단순한 조정이나 불편함 해소가 아닙니다.<br>
+                유통 채널에 대한 심층 분석을 통해<br>
+                매출 및 손익에 대한 전반적인 탐색과 제시를 하고,<br>
+                전체 운영 상황을 종합적으로 파악하여<br>
+                회사의 정확한 방향을 제시하는 전략적 접근의 중심입니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 2 -->
+        <section class="slide hidden slide-with-video" data-index="1">
+            <video class="video-background" autoplay muted preload="none" playsinline>
+                <source src="./resorce/전략기획실의 핵심역활 배경영상.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">전략기획실의 핵심 역할</h1>
+            <div class="slogan">"회사의 방향을 잡고, 구조를 만들고, 흐름을 제시한다"</div>
+            <div class="ment">"시스템화, 조직설계, 제품선택, 기업가치 향상을 통한 전략적 성장"</div>
+            <div class="speech">
+                "전략기획실의 역할은 명확합니다.<br>
+                회사의 방향을 잡고 (시스템화/조직설계/제품선택/기업가치 향상),<br>
+                구조를 만들고,<br>
+                부서 간 업무 조정 및 지원을 하며,<br>
+                전체적인 흐름에 대한 정확한 방향을 제시하는 것입니다.<br>
+                매출 확대, 이익 증대, 브랜드 정립을 통한<br>
+                전반적인 기업가치 상승이 우리의 목표입니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 3 -->
+        <section class="slide hidden" data-index="2">
+            <h1 class="presentation-title">그래서?</h1>
+            <div class="slogan">"이제 구체적인 실행 계획을 제시합니다"</div>
+            <div class="ment">"전략기획실의 역할을 바탕으로 한 실질적인 변화의 시작"</div>
+            <div class="speech">
+                "전략기획실이 무엇인지, 어떤 역할을 하는지 알았습니다.<br>
+                이제 우리가 실제로 무엇을 할 것인지,<br>
+                어떤 변화를 만들어갈 것인지 구체적으로 살펴보겠습니다.<br>
+                시스템 구축부터 조직 설계, 사업 확장까지<br>
+                단계별로 제시하는 실행 계획을 확인해보세요."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 4 -->
+        <section class="slide hidden slide-with-video" data-index="3">
+            <video class="video-background" autoplay muted preload="none" playsinline>
+                <source src="./resorce/전산 시스템 구축 및 물류 일원화 배경영상.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">첫째. 전산 시스템 구축 및 물류 일원화</h1>
+            <div class="slogan">"창고 병합을 통한 물류 일원화 및 ERP 시스템 구축"</div>
+            <div class="ment">"하드웨어와 소프트웨어의 통합을 통한 운영 효율성 극대화"</div>
+            <div class="speech">
+                "전산 시스템 구축 계획은 다음과 같습니다.<br>
+                창고를 병합하여 물류를 일원화하고,<br>
+                ERP 시스템을 구축하여 물류, 재고, 매출, 출고, 손익 확인,<br>
+                재고관리 등을 통합적으로 관리할 수 있게 합니다.<br>
+                이를 통해 수기 관리와 엑셀 기반 분석을 완전히 대체하여<br>
+                실시간 데이터 기반의 정확한 의사결정이 가능해집니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 5 -->
+        <section class="slide hidden slide-with-video" data-index="4">
+            <video class="video-background" autoplay muted preload="none" playsinline>
+                <source src="./resorce/복지 및 조직 체계 구축 배경영상.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">둘째. 복지 및 조직 체계 구축</h1>
+            <div class="slogan">"친화기업 인증 준비 및 체계적인 조직 설계"</div>
+            <div class="ment">"복지 제도 정비와 명확한 조직 구조를 통한 성장 경로 제시"</div>
+            <div class="speech">
+                "복지 및 조직 체계 구축 계획은 다음과 같습니다.<br>
+                친화기업 인증을 준비하여 정부 복지제도를<br>
+                우리 조직 안으로 체계적으로 도입하고,<br>
+                조직도를 명확히 하여 신입 → 중간관리 → 책임자로 이어지는<br>
+                성장 경로를 수직적으로 설계합니다.<br>
+                이를 통해 '내가 다음엔 어디로 가는지'가 보이는<br>
+                명확한 조직 구조를 만들겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 6 -->
+        <section class="slide hidden slide-with-video" data-index="5">
+            <video class="video-background" autoplay muted preload="none" playsinline>
+                <source src="./resorce/사업 확장 및 미래 비전.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">셋째. 사업 확장 및 미래 비전</h1>
+            <div class="slogan">"브랜드 포트폴리오 확장과 데이터 기반 전략적 성장"</div>
+            <div class="ment">"다각화된 사업 구조와 정량적 분석을 통한 예측 가능한 성장"</div>
+            <div class="speech">
+                "우리의 사업 확장과 미래 비전은 다음과 같습니다.<br>
+                압타밀, 에비앙 브랜드를 추가하여<br>
+                드리미 코오롱의 직접운영 시스템으로 전환하고,<br>
+                로청을 포함한 다른 카테고리 영역을 확대할 예정입니다.<br>
+                내년에는 레이레이에 집중하여<br>
+                브랜드 포트폴리오의 다각화와 시장 점유율 확대를 추진합니다.<br><br>
+                시스템을 먼저 구축하고, 그에 따른 정확한 데이터를 바탕으로<br>
+                회사에 명확한 방향성을 제시할 수 있게 성장하고 지원할 예정입니다.<br>
+                정량적 데이터 분석을 통해 예측 가능한 성장을 추구하고,<br>
+                체계적인 지원 체계를 구축하여<br>
+                전략기획실이 회사의 핵심 성장 동력이 되도록 하겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 계속 | 백스페이스 2번으로 이전</p>
+        </section>
+
+        <!-- 슬라이드 7 -->
+        <section class="slide hidden slide-with-video" data-index="6">
+            <video class="video-background" autoplay muted loop preload="none" playsinline>
+                <source src="./resorce/마무리슬라이드배경영상.mp4" type="video/mp4">
+            </video>
+            <h1 class="presentation-title">전략은 이제 실행의 단계 입니다.</h1>
+            <div class="slogan">"정량적 데이터 기반의 전략적 성장을 위한 시작"</div>
+            <div class="ment">"전략기획실은 회사의 정확한 방향을 제시하는 핵심 부서입니다."</div>
+            <div class="speech">
+                "지금 우리가 구축하는 시스템과 데이터,<br>
+                지금 우리가 설계하는 조직과 구조,<br>
+                결국 그것은 회사의 정확한 방향을 제시하고,<br>
+                정량적 분석을 통한 전략적 성장을 위한 기반입니다.<br>
+                전략기획실과 함께 더 나은 미래를 만들어가겠습니다."
+            </div>
+            <p class="enter-hint">엔터 키를 2번 눌러 종료 | 백스페이스 2번으로 이전</p>
+        </section>
+    </div>
+
+
+    <script>
+        (function () {
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            let current = 0;
+            let enterCount = 0; // 엔터 키 누른 횟수 추적
+            let backspaceCount = 0; // 백스페이스 키 누른 횟수 추적
+            
+
+
+            function showSlide(index) {
+                slides.forEach((s, i) => {
+                    if (i === index) {
+                        s.classList.remove('hidden');
+                        // 배경 영상이 있는 슬라이드의 경우 영상 로드 및 재생
+                        const video = s.querySelector('.video-background');
+                        if (video) {
+                            // preload="none"인 경우에만 로드
+                            if (video.preload === 'none') {
+                                video.preload = 'auto';
+                                video.load();
+                            }
+                            video.currentTime = 0;
+                            video.play().catch(e => console.log('비디오 재생 실패:', e));
+                        }
+                    } else {
+                        s.classList.add('hidden');
+                        // 숨겨지는 슬라이드의 배경 영상 일시정지
+                        const video = s.querySelector('.video-background');
+                        if (video) {
+                            video.pause();
+                            // 메모리 절약을 위해 preload만 none으로 변경 (src는 유지)
+                            if (i > index + 1 || i < index - 1) {
+                                video.preload = 'none';
+                            }
+                        }
+                    }
+                });
+                // 슬라이드가 바뀔 때마다 카운트 리셋
+                enterCount = 0;
+                backspaceCount = 0;
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Enter') {
+                    enterCount++;
+                    
+                    // 엔터 키를 2번 눌러야 다음으로 진행
+                    if (enterCount >= 2) {
+                        if (current < slides.length - 1) {
+                            current += 1;
+                            showSlide(current);
+                        } else {
+                            // 마지막 슬라이드에서 엔터 2번 → 종료
+                            console.log('프레젠테이션 종료');
+                        }
+                    }
+                } else if (e.key === 'Backspace') {
+                    backspaceCount++;
+                    
+                    // 백스페이스 키를 2번 눌러야 이전으로 돌아가기
+                    if (backspaceCount >= 2) {
+                        if (current > 0) {
+                            current -= 1;
+                            showSlide(current);
+                        }
+                    }
+                }
+            }
+
+            // 초기 표시
+            showSlide(current);
+
+            // 엔터와 백스페이스로 진행/뒤로가기
+            document.addEventListener('keydown', onKeyDown);
+        })();
+    </script>
+</body>
+</html>
