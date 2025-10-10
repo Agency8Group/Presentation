@@ -22,12 +22,21 @@
             overflow: hidden;
             margin: 0;
             padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        html {
+            width: 100%;
+            height: 100%;
         }
         
         .slideshow-container {
             position: relative;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             background: #000;
             margin: 0;
             padding: 0;
@@ -39,6 +48,8 @@
             left: 0;
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             opacity: 0;
             transform: scale(1.05);
             transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,6 +64,8 @@
         .slide-image {
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             object-fit: cover;
             object-position: center;
             display: block;
@@ -64,6 +77,8 @@
             left: 0;
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             background: linear-gradient(
                 to bottom,
                 rgba(0, 0, 0, 0.4) 0%,
@@ -131,6 +146,8 @@
             left: 0;
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             background: #000;
             display: flex;
             align-items: center;
@@ -147,6 +164,8 @@
             left: 0;
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             pointer-events: none;
             z-index: 1;
         }
@@ -201,6 +220,8 @@
             left: 0;
             width: 100%;
             height: 100%;
+            min-width: 100vw;
+            min-height: 100vh;
             background: radial-gradient(circle at center, #000428 0%, #000000 100%);
             display: flex;
             align-items: center;
@@ -303,6 +324,27 @@
         @keyframes pulse {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
+        }
+        
+        /* 전체화면 모드 호환성 개선 */
+        :fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        
+        :-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        
+        :-moz-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        
+        :-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
         }
         
     </style>
@@ -550,9 +592,16 @@
             }
             
             onWindowResize() {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                this.camera.aspect = width / height;
                 this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setSize(width, height);
+                
+                // 전체화면 모드에서도 올바른 크기 보장
+                this.renderer.domElement.style.width = '100%';
+                this.renderer.domElement.style.height = '100%';
             }
             
             destroy() {
