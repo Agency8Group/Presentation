@@ -578,6 +578,7 @@
                 this.clickCount = 0;
                 this.requiredClicks = 2;
                 this.particleSystem = null;
+                this.currentState = 'intro'; // 현재 상태: 'intro', 'slideshow', 'final'
                 
                 
                 this.init();
@@ -588,9 +589,9 @@
             }
             
             setupIntro() {
-                // 엔터 키 이벤트 리스너
+                // 엔터 키 이벤트 리스너 - 인트로 상태에서만 작동
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && this.currentState === 'intro') {
                         this.handleIntroClick();
                     }
                 });
@@ -605,6 +606,9 @@
             }
             
             startSlideshow() {
+                // 상태를 slideshow로 변경
+                this.currentState = 'slideshow';
+                
                 // 인트로 화면 숨기기
                 this.introScreen.classList.add('hidden');
                 
@@ -693,6 +697,9 @@
             async showFinalScreen() {
                 console.log('최종 화면 표시 시작');
                 
+                // 상태를 final로 변경
+                this.currentState = 'final';
+                
                 // 최종 화면 표시
                 this.finalScreen.classList.add('show');
                 
@@ -743,9 +750,9 @@
             setupFinalControl() {
                 let enterCount = 0; // 엔터 키 누른 횟수 추적
                 
-                // 엔터 키 이벤트 리스너 추가
+                // 엔터 키 이벤트 리스너 추가 - final 상태에서만 작동
                 const handleKeyPress = (e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && this.currentState === 'final') {
                         enterCount++;
                         
                         // 엔터 키를 2번 눌러야 presentation.html로 이동
