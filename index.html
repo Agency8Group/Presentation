@@ -887,8 +887,6 @@
                 // 인트로 화면 숨기기
                 this.introScreen.classList.add('hidden');
                 
-                // 자동으로 전체화면 모드로 전환
-                this.enterFullscreen();
                 
                 // 슬라이드쇼 시작
                 setTimeout(() => {
@@ -898,23 +896,6 @@
             
             beginSlideshow() {
                 this.startSlideshowAnimation();
-            }
-            
-            // 전체화면 모드로 전환하는 함수
-            enterFullscreen() {
-                const element = document.documentElement;
-                
-                if (element.requestFullscreen) {
-                    element.requestFullscreen().catch(err => {
-                        console.log('전체화면 전환 실패:', err);
-                    });
-                } else if (element.webkitRequestFullscreen) {
-                    element.webkitRequestFullscreen();
-                } else if (element.mozRequestFullScreen) {
-                    element.mozRequestFullScreen();
-                } else if (element.msRequestFullscreen) {
-                    element.msRequestFullscreen();
-                }
             }
             
             
