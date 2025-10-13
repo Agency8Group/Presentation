@@ -61,6 +61,18 @@
             transform: scale(1);
         }
         
+        /* 첫 번째 슬라이드(압타밀) 페이드 인 효과 */
+        .slide[data-slide="0"] {
+            opacity: 0;
+            transform: scale(1.05);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .slide[data-slide="0"].active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
         .slide-image {
             width: 100vw;
             height: 100vh;
@@ -466,7 +478,7 @@
 
     <div class="slideshow-container">
         <!-- 슬라이드 1: 뉴트리시아 -->
-        <div class="slide active" data-slide="0">
+        <div class="slide" data-slide="0">
             <img src="./resorce/1..뉴트리시아배경.png" alt="뉴트리시아" class="slide-image">
             <div class="slide-overlay"></div>
             <div class="slide-content">
@@ -1061,8 +1073,16 @@
             }
             
             async startSlideshowAnimation() {
-                // 첫 번째 슬라이드 텍스트 애니메이션
+                // 첫 번째 슬라이드(압타밀) 페이드 인 효과 시작
                 const firstSlide = this.slides[0];
+                firstSlide.classList.add('active');
+                
+                // 페이드 인 효과를 위한 대기 시간
+                await new Promise(resolve => {
+                    setTimeout(resolve, 500);
+                });
+                
+                // 첫 번째 슬라이드 텍스트 애니메이션
                 const title = firstSlide.querySelector('.slide-title');
                 const subtitle = firstSlide.querySelector('.slide-subtitle');
                 
