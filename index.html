@@ -415,16 +415,19 @@
 
 
     <script>
-        // 파티클 효과 클래스
-        class ParticleSystem {
+        // 우주 파티클 효과 클래스
+        class SpaceParticleSystem {
             constructor(container) {
                 this.container = container;
                 this.scene = null;
                 this.camera = null;
                 this.renderer = null;
-                this.particles = null;
+                this.starParticles = null;
+                this.nebulaParticles = null;
+                this.backgroundNebula = null;
                 this.animationId = null;
                 this.isActive = false;
+                this.time = 0;
             }
             
             init() {
@@ -449,15 +452,163 @@
                 this.renderer.setClearColor(0x000000, 0);
                 this.container.appendChild(this.renderer.domElement);
                 
-                // 파티클 생성
-                this.createParticles();
+                // 우주 요소들 생성
+                this.createBackgroundNebula();
+                this.createStarField();
+                this.createNebulaParticles();
                 
                 // 윈도우 리사이즈 이벤트
                 window.addEventListener('resize', () => this.onWindowResize());
             }
             
-            createParticles() {
-                const particleCount = 300;
+            // 배경 성운 생성 (회전하는 배경)
+            createBackgroundNebula() {
+                const geometry = new THREE.PlaneGeometry(20, 20);
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                    },
+                    vertexShader: `
+                        varying vec2 vUv;
+                        void main() {
+                            vUv = uv;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform vec2 resolution;
+                        varying vec2 vUv;
+                        
+                        void main() {
+                            vec2 uv = vUv - 0.5;
+                            uv.x *= resolution.x / resolution.y;
+                            
+                            // 회전하는 성운 패턴
+                            float angle = time * 0.1;
+                            float cos_a = cos(angle);
+                            float sin_a = sin(angle);
+                            vec2 rotated_uv = vec2(
+                                uv.x * cos_a - uv.y * sin_a,
+                                uv.x * sin_a + uv.y * cos_a
+                            );
+                            
+                            // 성운의 색상과 패턴
+                            float noise1 = sin(rotated_uv.x * 3.0 + time * 0.5) * cos(rotated_uv.y * 2.0 + time * 0.3);
+                            float noise2 = sin(rotated_uv.x * 5.0 - time * 0.2) * cos(rotated_uv.y * 4.0 - time * 0.4);
+                            
+                            // 우주 색상 (보라, 파랑, 핑크)
+                            vec3 color1 = vec3(0.3, 0.1, 0.8); // 보라
+                            vec3 color2 = vec3(0.1, 0.3, 0.9); // 파랑
+                            vec3 color3 = vec3(0.8, 0.2, 0.6); // 핑크
+                            
+                            float mix1 = (noise1 + 1.0) * 0.5;
+                            float mix2 = (noise2 + 1.0) * 0.5;
+                            
+                            vec3 finalColor = mix(color1, color2, mix1);
+                            finalColor = mix(finalColor, color3, mix2 * 0.3);
+                            
+                            // 거리에 따른 페이드
+                            float dist = length(uv);
+                            float alpha = (1.0 - smoothstep(0.0, 1.5, dist)) * 0.3;
+                            
+                            gl_FragColor = vec4(finalColor, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                this.backgroundNebula = new THREE.Mesh(geometry, material);
+                this.backgroundNebula.position.z = -10;
+                this.scene.add(this.backgroundNebula);
+            }
+            
+            // 별 필드 생성
+            createStarField() {
+                const starCount = 500;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(starCount * 3);
+                const colors = new Float32Array(starCount * 3);
+                const sizes = new Float32Array(starCount);
+                
+                for (let i = 0; i < starCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // 별 위치 (구형으로 분산)
+                    const radius = Math.random() * 25 + 10;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.random() * Math.PI;
+                    
+                    positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                    positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    positions[i3 + 2] = radius * Math.cos(phi);
+                    
+                    // 별 크기 (다양한 크기)
+                    sizes[i] = Math.random() * 0.3 + 0.1;
+                    
+                    // 별 색상 (흰색, 파란색, 노란색)
+                    const color = new THREE.Color();
+                    const colorType = Math.random();
+                    if (colorType < 0.7) {
+                        // 흰색 별
+                        const brightness = Math.random() * 0.3 + 0.7;
+                        color.setHSL(0, 0, brightness);
+                    } else if (colorType < 0.9) {
+                        // 파란색 별
+                        color.setHSL(0.6, 0.8, 0.8);
+                    } else {
+                        // 노란색 별
+                        color.setHSL(0.15, 0.8, 0.9);
+                    }
+                    
+                    colors[i3] = color.r;
+                    colors[i3 + 1] = color.g;
+                    colors[i3 + 2] = color.b;
+                }
+                
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                
+                // 별 텍스처 생성
+                const canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 64;
+                const context = canvas.getContext('2d');
+                
+                // 별 모양 그라데이션
+                const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                context.fillStyle = gradient;
+                context.beginPath();
+                context.arc(32, 32, 32, 0, Math.PI * 2);
+                context.fill();
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                
+                const material = new THREE.PointsMaterial({
+                    map: texture,
+                    size: 0.3,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.9,
+                    blending: THREE.AdditiveBlending,
+                    sizeAttenuation: true
+                });
+                
+                this.starParticles = new THREE.Points(geometry, material);
+                this.scene.add(this.starParticles);
+            }
+            
+            // 성운 파티클 생성
+            createNebulaParticles() {
+                const particleCount = 200;
                 const geometry = new THREE.BufferGeometry();
                 const positions = new Float32Array(particleCount * 3);
                 const colors = new Float32Array(particleCount * 3);
@@ -477,17 +628,27 @@
                     positions[i3 + 2] = radius * Math.cos(phi);
                     
                     // 속도 설정 (부드러운 움직임)
-                    velocities[i3] = (Math.random() - 0.5) * 0.02;
-                    velocities[i3 + 1] = (Math.random() - 0.5) * 0.02;
-                    velocities[i3 + 2] = (Math.random() - 0.5) * 0.02;
+                    velocities[i3] = (Math.random() - 0.5) * 0.01;
+                    velocities[i3 + 1] = (Math.random() - 0.5) * 0.01;
+                    velocities[i3 + 2] = (Math.random() - 0.5) * 0.01;
                     
-                    // 크기 설정 (다양한 크기)
-                    sizes[i] = Math.random() * 0.15 + 0.05;
+                    // 크기 설정 (성운 파티클은 더 크고 부드러움)
+                    sizes[i] = Math.random() * 0.4 + 0.2;
                     
-                    // 색상 설정 (더 자연스러운 흰색 계열)
+                    // 성운 색상 (보라, 파랑, 핑크)
                     const color = new THREE.Color();
-                    const brightness = Math.random() * 0.4 + 0.6;
-                    color.setHSL(0, 0, brightness);
+                    const colorType = Math.random();
+                    if (colorType < 0.4) {
+                        // 보라색
+                        color.setHSL(0.8, 0.6, 0.7);
+                    } else if (colorType < 0.7) {
+                        // 파란색
+                        color.setHSL(0.6, 0.8, 0.8);
+                    } else {
+                        // 핑크색
+                        color.setHSL(0.9, 0.7, 0.8);
+                    }
+                    
                     colors[i3] = color.r;
                     colors[i3 + 1] = color.g;
                     colors[i3 + 2] = color.b;
@@ -500,16 +661,16 @@
                 // 속도를 geometry에 저장
                 this.velocities = velocities;
                 
-                // 동그라미 텍스처 생성
+                // 성운 텍스처 생성 (더 부드러운 그라데이션)
                 const canvas = document.createElement('canvas');
                 canvas.width = 64;
                 canvas.height = 64;
                 const context = canvas.getContext('2d');
                 
-                // 그라데이션 원 그리기
                 const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
-                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.4)');
+                gradient.addColorStop(0.8, 'rgba(255, 255, 255, 0.1)');
                 gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
                 
                 context.fillStyle = gradient;
@@ -521,17 +682,16 @@
                 
                 const material = new THREE.PointsMaterial({
                     map: texture,
-                    size: 0.2,
+                    size: 0.5,
                     vertexColors: true,
                     transparent: true,
-                    opacity: 0.8,
+                    opacity: 0.6,
                     blending: THREE.AdditiveBlending,
-                    sizeAttenuation: true,
-                    alphaTest: 0.1
+                    sizeAttenuation: true
                 });
                 
-                this.particles = new THREE.Points(geometry, material);
-                this.scene.add(this.particles);
+                this.nebulaParticles = new THREE.Points(geometry, material);
+                this.scene.add(this.nebulaParticles);
             }
             
             animate() {
@@ -539,15 +699,28 @@
                 
                 this.animationId = requestAnimationFrame(() => this.animate());
                 
-                const time = Date.now() * 0.001;
+                this.time += 0.016; // 약 60fps
                 
-                if (this.particles && this.velocities) {
-                    // 부드러운 회전
-                    this.particles.rotation.x += 0.0005;
-                    this.particles.rotation.y += 0.001;
+                // 배경 성운 회전 및 시간 업데이트
+                if (this.backgroundNebula) {
+                    this.backgroundNebula.material.uniforms.time.value = this.time;
+                    this.backgroundNebula.rotation.z += 0.001;
+                }
+                
+                // 별 필드 회전
+                if (this.starParticles) {
+                    this.starParticles.rotation.x += 0.0003;
+                    this.starParticles.rotation.y += 0.0005;
+                }
+                
+                // 성운 파티클 애니메이션
+                if (this.nebulaParticles && this.velocities) {
+                    // 전체 회전
+                    this.nebulaParticles.rotation.x += 0.0008;
+                    this.nebulaParticles.rotation.y += 0.0012;
                     
-                    // 파티클 위치 업데이트 (더 자연스러운 움직임)
-                    const positions = this.particles.geometry.attributes.position.array;
+                    // 파티클 위치 업데이트
+                    const positions = this.nebulaParticles.geometry.attributes.position.array;
                     for (let i = 0; i < positions.length; i += 3) {
                         const index = i / 3;
                         
@@ -556,21 +729,22 @@
                         positions[i + 1] += this.velocities[i + 1];
                         positions[i + 2] += this.velocities[i + 2];
                         
-                        // 부드러운 파도 효과
-                        positions[i + 1] += Math.sin(time * 0.5 + index * 0.1) * 0.005;
-                        positions[i] += Math.cos(time * 0.3 + index * 0.15) * 0.003;
+                        // 우주적인 파도 효과
+                        positions[i + 1] += Math.sin(this.time * 0.3 + index * 0.1) * 0.008;
+                        positions[i] += Math.cos(this.time * 0.2 + index * 0.15) * 0.005;
+                        positions[i + 2] += Math.sin(this.time * 0.4 + index * 0.08) * 0.003;
                         
                         // 경계 체크 (구형 범위 내에서)
                         const distance = Math.sqrt(positions[i]**2 + positions[i+1]**2 + positions[i+2]**2);
                         if (distance > 20) {
                             // 중심으로 다시 끌어당기기
-                            positions[i] *= 0.95;
-                            positions[i + 1] *= 0.95;
-                            positions[i + 2] *= 0.95;
+                            positions[i] *= 0.98;
+                            positions[i + 1] *= 0.98;
+                            positions[i + 2] *= 0.98;
                         }
                     }
                     
-                    this.particles.geometry.attributes.position.needsUpdate = true;
+                    this.nebulaParticles.geometry.attributes.position.needsUpdate = true;
                 }
                 
                 this.renderer.render(this.scene, this.camera);
@@ -787,10 +961,10 @@
             initParticleSystem() {
                 const particlesContainer = document.getElementById('particles-container');
                 if (particlesContainer && typeof THREE !== 'undefined') {
-                    this.particleSystem = new ParticleSystem(particlesContainer);
+                    this.particleSystem = new SpaceParticleSystem(particlesContainer);
                     this.particleSystem.init();
                     this.particleSystem.start();
-                    console.log('파티클 시스템 시작됨');
+                    console.log('우주 파티클 시스템 시작됨');
                 } else {
                     console.warn('Three.js가 로드되지 않았거나 파티클 컨테이너를 찾을 수 없습니다.');
                 }
