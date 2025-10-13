@@ -125,6 +125,16 @@
             transform: translateY(0);
         }
         
+        /* 우리회사 슬라이드 제목 크기 조정 */
+        .slide[data-slide="3"] .slide-title {
+            font-size: 2.8rem;
+        }
+        
+        /* 우리회사 슬라이드 배경 이미지 크기 조정 */
+        .slide[data-slide="3"] .slide-image {
+            transform: scale(0.9);
+        }
+        
         .slide-subtitle {
             font-size: 1.5rem;
             font-weight: 300;
@@ -203,6 +213,12 @@
             transform: translateY(0);
         }
         
+        .final-title.fade-out {
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
         .final-line {
             width: 0;
             height: 4px;
@@ -215,6 +231,12 @@
         
         .final-line.show {
             width: 300px;
+        }
+        
+        .final-line.fade-out {
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         /* 인트로 화면 */
@@ -344,6 +366,10 @@
             transform: scale(1.1) !important;
         }
         
+        :fullscreen .slide[data-slide="3"] .slide-image {
+            transform: scale(0.9) !important;
+        }
+        
         :fullscreen .slide-overlay {
             width: 100vw !important;
             height: 100vh !important;
@@ -362,6 +388,10 @@
             min-width: 100vw !important;
             min-height: 100vh !important;
             transform: scale(1.1) !important;
+        }
+        
+        :-webkit-full-screen .slide[data-slide="3"] .slide-image {
+            transform: scale(0.9) !important;
         }
         
         :-webkit-full-screen .slide-overlay {
@@ -384,6 +414,10 @@
             transform: scale(1.1) !important;
         }
         
+        :-moz-full-screen .slide[data-slide="3"] .slide-image {
+            transform: scale(0.9) !important;
+        }
+        
         :-moz-full-screen .slide-overlay {
             width: 100vw !important;
             height: 100vh !important;
@@ -402,6 +436,10 @@
             min-width: 100vw !important;
             min-height: 100vh !important;
             transform: scale(1.1) !important;
+        }
+        
+        :-ms-fullscreen .slide[data-slide="3"] .slide-image {
+            transform: scale(0.9) !important;
         }
         
         :-ms-fullscreen .slide-overlay {
@@ -772,6 +810,14 @@
                 this.renderer.domElement.style.height = '100%';
             }
             
+            fadeOut() {
+                // 파티클 시스템 페이드아웃
+                if (this.renderer && this.renderer.domElement) {
+                    this.renderer.domElement.style.transition = 'opacity 2s ease-out';
+                    this.renderer.domElement.style.opacity = '0';
+                }
+            }
+            
             destroy() {
                 this.stop();
                 if (this.renderer && this.renderer.domElement) {
@@ -974,17 +1020,44 @@
                         
                         // 엔터 키를 2번 눌러야 presentation.html로 이동
                         if (enterCount >= 2) {
-                            // 파티클 시스템 정리
-                            if (this.particleSystem) {
-                                this.particleSystem.destroy();
-                            }
-                            document.removeEventListener('keydown', handleKeyPress);
-                            // presentation.html로 이동
-                            window.location.href = 'presentation.html';
+                            this.startFadeOut();
                         }
                     }
                 };
                 document.addEventListener('keydown', handleKeyPress);
+            }
+            
+            async startFadeOut() {
+                console.log('페이드아웃 시작');
+                
+                // 제목과 라인에 페이드아웃 클래스 추가
+                const finalTitle = this.finalScreen.querySelector('.final-title');
+                const finalLine = this.finalScreen.querySelector('.final-line');
+                
+                if (finalTitle) {
+                    finalTitle.classList.add('fade-out');
+                }
+                if (finalLine) {
+                    finalLine.classList.add('fade-out');
+                }
+                
+                // 파티클 시스템도 페이드아웃
+                if (this.particleSystem) {
+                    this.particleSystem.fadeOut();
+                }
+                
+                // 2초 대기 후 페이지 이동
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        // 파티클 시스템 정리
+                        if (this.particleSystem) {
+                            this.particleSystem.destroy();
+                        }
+                        // presentation.html로 이동
+                        window.location.href = 'presentation.html';
+                        resolve();
+                    }, 2000);
+                });
             }
             
             async startSlideshowAnimation() {
