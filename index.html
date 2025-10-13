@@ -424,7 +424,6 @@
                 this.renderer = null;
                 this.starParticles = null;
                 this.nebulaParticles = null;
-                this.backgroundNebula = null;
                 this.animationId = null;
                 this.isActive = false;
                 this.time = 0;
@@ -453,7 +452,6 @@
                 this.container.appendChild(this.renderer.domElement);
                 
                 // 우주 요소들 생성
-                this.createBackgroundNebula();
                 this.createStarField();
                 this.createNebulaParticles();
                 
@@ -461,69 +459,6 @@
                 window.addEventListener('resize', () => this.onWindowResize());
             }
             
-            // 배경 성운 생성 (회전하는 배경)
-            createBackgroundNebula() {
-                const geometry = new THREE.PlaneGeometry(20, 20);
-                const material = new THREE.ShaderMaterial({
-                    uniforms: {
-                        time: { value: 0 },
-                        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-                    },
-                    vertexShader: `
-                        varying vec2 vUv;
-                        void main() {
-                            vUv = uv;
-                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                        }
-                    `,
-                    fragmentShader: `
-                        uniform float time;
-                        uniform vec2 resolution;
-                        varying vec2 vUv;
-                        
-                        void main() {
-                            vec2 uv = vUv - 0.5;
-                            uv.x *= resolution.x / resolution.y;
-                            
-                            // 회전하는 성운 패턴
-                            float angle = time * 0.1;
-                            float cos_a = cos(angle);
-                            float sin_a = sin(angle);
-                            vec2 rotated_uv = vec2(
-                                uv.x * cos_a - uv.y * sin_a,
-                                uv.x * sin_a + uv.y * cos_a
-                            );
-                            
-                            // 성운의 색상과 패턴
-                            float noise1 = sin(rotated_uv.x * 3.0 + time * 0.5) * cos(rotated_uv.y * 2.0 + time * 0.3);
-                            float noise2 = sin(rotated_uv.x * 5.0 - time * 0.2) * cos(rotated_uv.y * 4.0 - time * 0.4);
-                            
-                            // 우주 색상 (보라, 파랑, 핑크)
-                            vec3 color1 = vec3(0.3, 0.1, 0.8); // 보라
-                            vec3 color2 = vec3(0.1, 0.3, 0.9); // 파랑
-                            vec3 color3 = vec3(0.8, 0.2, 0.6); // 핑크
-                            
-                            float mix1 = (noise1 + 1.0) * 0.5;
-                            float mix2 = (noise2 + 1.0) * 0.5;
-                            
-                            vec3 finalColor = mix(color1, color2, mix1);
-                            finalColor = mix(finalColor, color3, mix2 * 0.3);
-                            
-                            // 거리에 따른 페이드
-                            float dist = length(uv);
-                            float alpha = (1.0 - smoothstep(0.0, 1.5, dist)) * 0.3;
-                            
-                            gl_FragColor = vec4(finalColor, alpha);
-                        }
-                    `,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending
-                });
-                
-                this.backgroundNebula = new THREE.Mesh(geometry, material);
-                this.backgroundNebula.position.z = -10;
-                this.scene.add(this.backgroundNebula);
-            }
             
             // 별 필드 생성
             createStarField() {
@@ -701,11 +636,6 @@
                 
                 this.time += 0.016; // 약 60fps
                 
-                // 배경 성운 회전 및 시간 업데이트
-                if (this.backgroundNebula) {
-                    this.backgroundNebula.material.uniforms.time.value = this.time;
-                    this.backgroundNebula.rotation.z += 0.001;
-                }
                 
                 // 별 필드 회전
                 if (this.starParticles) {
